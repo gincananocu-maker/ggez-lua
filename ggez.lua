@@ -57,7 +57,7 @@ end)
 
 QuitButton.MouseButton1Click:Connect(function()
     Frame.Visible = false
-    print("Menu fechado")
+    print("Menu fechaado")
 end)
 
 -- Funções placeholders que printam no output
