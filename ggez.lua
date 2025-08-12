@@ -1,135 +1,85 @@
-local player = game.Players.LocalPlayer
-local runService = game:GetService("RunService")
-local userInputService = game:GetService("UserInputService")
+local Players = game:GetService("Players")
+local Player = Players.LocalPlayer
+local PlayerGui = Player:WaitForChild("PlayerGui")
 
-local autoFarmOn = false
-local autoAttackOn = false
+-- Criar ScreenGui
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "AutoFarmGui"
+ScreenGui.Parent = PlayerGui
 
-local screenGui = Instance.new("ScreenGui")
-screenGui.Name = "AutoFarmAttackGUI"
-screenGui.Parent = player:WaitForChild("PlayerGui")
+-- Criar o botão de logo Sharingan (ImageButton)
+local SharinganButton = Instance.new("ImageButton")
+SharinganButton.Name = "SharinganButton"
+SharinganButton.Parent = ScreenGui
+SharinganButton.Size = UDim2.new(0, 60, 0, 60) -- tamanho do botão
+SharinganButton.Position = UDim2.new(0, 20, 0, 20) -- posição inicial
+SharinganButton.BackgroundTransparency = 1
+SharinganButton.Image = "rbxassetid://10520423879" -- Sharingan (exemplo, pode trocar)
 
--- Logo Sharingan
-local logo = Instance.new("Frame")
-logo.Size = UDim2.new(0, 80, 0, 80)
-logo.Position = UDim2.new(0, 10, 0, 10)
-logo.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-logo.BorderSizePixel = 0
-logo.Active = true
-logo.Selectable = true
-logo.Parent = screenGui
+-- Criar o frame do menu (inicialmente invisível)
+local MenuFrame = Instance.new("Frame")
+MenuFrame.Name = "MenuFrame"
+MenuFrame.Parent = ScreenGui
+MenuFrame.Size = UDim2.new(0, 200, 0, 150)
+MenuFrame.Position = UDim2.new(0, 100, 0, 100)
+MenuFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+MenuFrame.Visible = false
+MenuFrame.Active = true
+MenuFrame.Draggable = false -- vamos controlar drag só do botão
 
--- Círculo vermelho principal (base do Sharingan)
-local mainCircle = Instance.new("Frame")
-mainCircle.Size = UDim2.new(1, 0, 1, 0)
-mainCircle.BackgroundColor3 = Color3.fromRGB(178, 34, 34) -- vermelho escuro
-mainCircle.BorderSizePixel = 0
-mainCircle.Parent = logo
-local mainCircleCorner = Instance.new("UICorner")
-mainCircleCorner.CornerRadius = UDim.new(1, 0)
-mainCircleCorner.Parent = mainCircle
-
--- Círculo preto interno
-local innerCircle = Instance.new("Frame")
-innerCircle.Size = UDim2.new(0.6, 0, 0.6, 0)
-innerCircle.Position = UDim2.new(0.2, 0, 0.2, 0)
-innerCircle.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-innerCircle.BorderSizePixel = 0
-innerCircle.Parent = logo
-local innerCircleCorner = Instance.new("UICorner")
-innerCircleCorner.CornerRadius = UDim.new(1, 0)
-innerCircleCorner.Parent = innerCircle
-
--- Círculo vermelho menor dentro
-local smallRedCircle = Instance.new("Frame")
-smallRedCircle.Size = UDim2.new(0.3, 0, 0.3, 0)
-smallRedCircle.Position = UDim2.new(0.35, 0, 0.35, 0)
-smallRedCircle.BackgroundColor3 = Color3.fromRGB(178, 34, 34)
-smallRedCircle.BorderSizePixel = 0
-smallRedCircle.Parent = logo
-local smallRedCircleCorner = Instance.new("UICorner")
-smallRedCircleCorner.CornerRadius = UDim.new(1, 0)
-smallRedCircleCorner.Parent = smallRedCircle
-
--- "Pupilas" do Sharingan (três pontinhos pretos ao redor)
-local function createDot(angle)
-    local dot = Instance.new("Frame")
-    dot.Size = UDim2.new(0, 12, 0, 12)
-    dot.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-    dot.BorderSizePixel = 0
-    dot.Parent = logo
-    local dotCorner = Instance.new("UICorner")
-    dotCorner.CornerRadius = UDim.new(1, 0)
-    dotCorner.Parent = dot
-
-    -- Posição circular simples com trigonometria
-    local radius = 30
-    local centerX, centerY = 40, 40 -- centro do logo (80x80)
-    local rad = math.rad(angle)
-    local x = centerX + radius * math.cos(rad) - dot.AbsoluteSize.X/2
-    local y = centerY + radius * math.sin(rad) - dot.AbsoluteSize.Y/2
-
-    -- Como AbsoluteSize pode não estar pronto, usar posição aproximada com UDim2:
-    dot.Position = UDim2.new(0, 40 + radius * math.cos(rad) - 6, 0, 40 + radius * math.sin(rad) - 6)
-end
-
-createDot(0)
-createDot(120)
-createDot(240)
-
--- Frame do menu
-local frame = Instance.new("Frame")
-frame.Size = UDim2.new(0, 200, 0, 100)
-frame.Position = UDim2.new(0, 10, 0, 100)
-frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-frame.BorderSizePixel = 0
-frame.Visible = false
-frame.Parent = screenGui
-
-local function createToggleButton(text, posY)
+-- Função para criar botões do menu
+local function createToggleButton(name, position)
     local button = Instance.new("TextButton")
+    button.Name = name .. "Button"
+    button.Parent = MenuFrame
     button.Size = UDim2.new(0, 180, 0, 40)
-    button.Position = UDim2.new(0, 10, 0, posY)
-    button.BackgroundColor3 = Color3.fromRGB(70, 70, 70)
-    button.TextColor3 = Color3.new(1, 1, 1)
+    button.Position = position
+    button.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+    button.TextColor3 = Color3.fromRGB(255, 255, 255)
     button.Font = Enum.Font.SourceSansBold
-    button.TextSize = 20
-    button.Text = text .. ": OFF"
-    button.Parent = frame
+    button.TextSize = 18
+    button.Text = name .. ": OFF"
+    button.AutoButtonColor = true
     return button
 end
 
-local autoFarmBtn = createToggleButton("Auto Farm", 10)
-local autoAttackBtn = createToggleButton("Auto Attack", 55)
+-- Criar botões auto farm e auto attack
+local autoFarmButton = createToggleButton("Auto Farm", UDim2.new(0, 10, 0, 10))
+local autoAttackButton = createToggleButton("Auto Attack", UDim2.new(0, 10, 0, 60))
 
--- Toggle menu visibility ao clicar na logo
-logo.InputBegan:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 then
-        frame.Visible = not frame.Visible
-    end
+-- Variáveis de controle
+local autoFarmEnabled = false
+local autoAttackEnabled = false
+
+-- Alternar estados e texto dos botões
+autoFarmButton.MouseButton1Click:Connect(function()
+    autoFarmEnabled = not autoFarmEnabled
+    autoFarmButton.Text = "Auto Farm: " .. (autoFarmEnabled and "ON" or "OFF")
 end)
 
--- Toggle auto farm
-autoFarmBtn.MouseButton1Click:Connect(function()
-    autoFarmOn = not autoFarmOn
-    autoFarmBtn.Text = "Auto Farm: " .. (autoFarmOn and "ON" or "OFF")
+autoAttackButton.MouseButton1Click:Connect(function()
+    autoAttackEnabled = not autoAttackEnabled
+    autoAttackButton.Text = "Auto Attack: " .. (autoAttackEnabled and "ON" or "OFF")
 end)
 
--- Toggle auto attack
-autoAttackBtn.MouseButton1Click:Connect(function()
-    autoAttackOn = not autoAttackOn
-    autoAttackBtn.Text = "Auto Attack: " .. (autoAttackOn and "ON" or "OFF")
+-- Mostrar/ocultar menu clicando na logo Sharingan
+SharinganButton.MouseButton1Click:Connect(function()
+    MenuFrame.Visible = not MenuFrame.Visible
 end)
 
--- Dragging logic
-local dragging = false
-local dragInput, dragStart, startPos
+-- Código para arrastar o SharinganButton
+local UserInputService = game:GetService("UserInputService")
 
-logo.InputBegan:Connect(function(input)
+local dragging
+local dragInput
+local dragStart
+local startPos
+
+SharinganButton.InputBegan:Connect(function(input)
     if input.UserInputType == Enum.UserInputType.MouseButton1 then
         dragging = true
         dragStart = input.Position
-        startPos = logo.Position
+        startPos = SharinganButton.Position
 
         input.Changed:Connect(function()
             if input.UserInputState == Enum.UserInputState.End then
@@ -139,40 +89,20 @@ logo.InputBegan:Connect(function(input)
     end
 end)
 
-logo.InputChanged:Connect(function(input)
+SharinganButton.InputChanged:Connect(function(input)
     if input.UserInputType == Enum.UserInputType.MouseMovement then
         dragInput = input
     end
 end)
 
-userInputService.InputChanged:Connect(function(input)
+UserInputService.InputChanged:Connect(function(input)
     if input == dragInput and dragging then
         local delta = input.Position - dragStart
-        logo.Position = UDim2.new(
+        SharinganButton.Position = UDim2.new(
             startPos.X.Scale,
             startPos.X.Offset + delta.X,
             startPos.Y.Scale,
             startPos.Y.Offset + delta.Y
         )
-        -- Atualiza a posição do menu para ficar logo abaixo da logo
-        frame.Position = UDim2.new(0, logo.AbsolutePosition.X, 0, logo.AbsolutePosition.Y + logo.AbsoluteSize.Y + 10)
-    end
-end)
-
--- Funções placeholders
-local function attackNearestEnemy()
-    print("Atacando inimigo...")
-end
-
-local function autoFarm()
-    print("Farmando...")
-end
-
-runService.Heartbeat:Connect(function()
-    if autoFarmOn then
-        autoFarm()
-    end
-    if autoAttackOn then
-        attackNearestEnemy()
     end
 end)
