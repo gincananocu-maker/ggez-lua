@@ -1,12 +1,5 @@
 local RunService = game:GetService("RunService")
-print("Iniciando script...")
-
-if not RunService:IsClient() then
-    warn("Script não está rodando no cliente. Precisa rodar como LocalScript.")
-    return
-else
-    print("Executando no cliente!")
-end
+if not RunService:IsClient() then return end
 
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
