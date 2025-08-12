@@ -9,43 +9,78 @@ local screenGui = Instance.new("ScreenGui")
 screenGui.Name = "AutoFarmAttackGUI"
 screenGui.Parent = player:WaitForChild("PlayerGui")
 
--- Logo (ImageLabel) com desenho simples via ImageColor3 e transparência
-local logo = Instance.new("ImageLabel")
-logo.Size = UDim2.new(0, 60, 0, 60)
+-- Logo Sharingan
+local logo = Instance.new("Frame")
+logo.Size = UDim2.new(0, 80, 0, 80)
 logo.Position = UDim2.new(0, 10, 0, 10)
-logo.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+logo.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
 logo.BorderSizePixel = 0
-logo.Image = "" -- Sem imagem externa, vamos desenhar com Frame por cima
-logo.Parent = screenGui
 logo.Active = true
 logo.Selectable = true
-logo.Draggable = false -- Vamos controlar drag manualmente para maior controle
+logo.Parent = screenGui
 
--- Desenhar um "V" estilizado dentro da logo usando Frames
-local function createVShape(parent)
-    local line1 = Instance.new("Frame")
-    line1.Size = UDim2.new(0, 12, 0, 40)
-    line1.Position = UDim2.new(0, 15, 0, 10)
-    line1.BackgroundColor3 = Color3.new(0, 1, 0)
-    line1.BorderSizePixel = 0
-    line1.Rotation = 45
-    line1.Parent = parent
+-- Círculo vermelho principal (base do Sharingan)
+local mainCircle = Instance.new("Frame")
+mainCircle.Size = UDim2.new(1, 0, 1, 0)
+mainCircle.BackgroundColor3 = Color3.fromRGB(178, 34, 34) -- vermelho escuro
+mainCircle.BorderSizePixel = 0
+mainCircle.Parent = logo
+local mainCircleCorner = Instance.new("UICorner")
+mainCircleCorner.CornerRadius = UDim.new(1, 0)
+mainCircleCorner.Parent = mainCircle
 
-    local line2 = Instance.new("Frame")
-    line2.Size = UDim2.new(0, 12, 0, 40)
-    line2.Position = UDim2.new(0, 33, 0, 10)
-    line2.BackgroundColor3 = Color3.new(0, 1, 0)
-    line2.BorderSizePixel = 0
-    line2.Rotation = -45
-    line2.Parent = parent
+-- Círculo preto interno
+local innerCircle = Instance.new("Frame")
+innerCircle.Size = UDim2.new(0.6, 0, 0.6, 0)
+innerCircle.Position = UDim2.new(0.2, 0, 0.2, 0)
+innerCircle.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+innerCircle.BorderSizePixel = 0
+innerCircle.Parent = logo
+local innerCircleCorner = Instance.new("UICorner")
+innerCircleCorner.CornerRadius = UDim.new(1, 0)
+innerCircleCorner.Parent = innerCircle
+
+-- Círculo vermelho menor dentro
+local smallRedCircle = Instance.new("Frame")
+smallRedCircle.Size = UDim2.new(0.3, 0, 0.3, 0)
+smallRedCircle.Position = UDim2.new(0.35, 0, 0.35, 0)
+smallRedCircle.BackgroundColor3 = Color3.fromRGB(178, 34, 34)
+smallRedCircle.BorderSizePixel = 0
+smallRedCircle.Parent = logo
+local smallRedCircleCorner = Instance.new("UICorner")
+smallRedCircleCorner.CornerRadius = UDim.new(1, 0)
+smallRedCircleCorner.Parent = smallRedCircle
+
+-- "Pupilas" do Sharingan (três pontinhos pretos ao redor)
+local function createDot(angle)
+    local dot = Instance.new("Frame")
+    dot.Size = UDim2.new(0, 12, 0, 12)
+    dot.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    dot.BorderSizePixel = 0
+    dot.Parent = logo
+    local dotCorner = Instance.new("UICorner")
+    dotCorner.CornerRadius = UDim.new(1, 0)
+    dotCorner.Parent = dot
+
+    -- Posição circular simples com trigonometria
+    local radius = 30
+    local centerX, centerY = 40, 40 -- centro do logo (80x80)
+    local rad = math.rad(angle)
+    local x = centerX + radius * math.cos(rad) - dot.AbsoluteSize.X/2
+    local y = centerY + radius * math.sin(rad) - dot.AbsoluteSize.Y/2
+
+    -- Como AbsoluteSize pode não estar pronto, usar posição aproximada com UDim2:
+    dot.Position = UDim2.new(0, 40 + radius * math.cos(rad) - 6, 0, 40 + radius * math.sin(rad) - 6)
 end
 
-createVShape(logo)
+createDot(0)
+createDot(120)
+createDot(240)
 
 -- Frame do menu
 local frame = Instance.new("Frame")
 frame.Size = UDim2.new(0, 200, 0, 100)
-frame.Position = UDim2.new(0, 10, 0, 80)
+frame.Position = UDim2.new(0, 10, 0, 100)
 frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 frame.BorderSizePixel = 0
 frame.Visible = false
@@ -68,8 +103,10 @@ local autoFarmBtn = createToggleButton("Auto Farm", 10)
 local autoAttackBtn = createToggleButton("Auto Attack", 55)
 
 -- Toggle menu visibility ao clicar na logo
-logo.MouseButton1Click:Connect(function()
-    frame.Visible = not frame.Visible
+logo.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        frame.Visible = not frame.Visible
+    end
 end)
 
 -- Toggle auto farm
