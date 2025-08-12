@@ -1,111 +1,98 @@
--- Variables
-local UserInputService = game:GetService("UserInputService")
-local TweenService = game:GetService("TweenService")
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
+
+-- Variáveis controle
+local autoFarm = false
+local autoAttack = false
 
 -- Criar ScreenGui
-local screenGui = Instance.new("ScreenGui")
-screenGui.Name = "MenuGui"
-screenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "SharinganGui"
+ScreenGui.Parent = playerGui
 
--- Criar botão com logo Sharingan
-local button = Instance.new("ImageButton")
-button.Name = "MenuButton"
-button.Size = UDim2.new(0, 60, 0, 60)
-button.Position = UDim2.new(0, 10, 0, 10)
-button.BackgroundColor3 = Color3.fromRGB(30,30,30)
-button.BackgroundTransparency = 0.3
-button.Image = "rbxassetid://10520423879"  -- Sharingan logo
-button.Parent = screenGui
-button.AutoButtonColor = false
-button.Active = true
-button.Draggable = false
+-- Criar menu (Frame)
+local Frame = Instance.new("Frame")
+Frame.Size = UDim2.new(0, 200, 0, 150)
+Frame.Position = UDim2.new(0, 50, 0, 50)
+Frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+Frame.Visible = false
+Frame.Parent = ScreenGui
 
--- Criar Frame do menu (inicialmente invisível)
-local menuFrame = Instance.new("Frame")
-menuFrame.Name = "MenuFrame"
-menuFrame.Size = UDim2.new(0, 200, 0, 120)
-menuFrame.Position = UDim2.new(0, 10, 0, 75)
-menuFrame.BackgroundColor3 = Color3.fromRGB(20,20,20)
-menuFrame.BackgroundTransparency = 0.1
-menuFrame.BorderSizePixel = 0
-menuFrame.Visible = false
-menuFrame.Parent = screenGui
+-- Botão Auto Farm
+local ToggleButtonFarm = Instance.new("TextButton")
+ToggleButtonFarm.Size = UDim2.new(0, 180, 0, 40)
+ToggleButtonFarm.Position = UDim2.new(0, 10, 0, 10)
+ToggleButtonFarm.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+ToggleButtonFarm.Text = "Auto Farm: OFF"
+ToggleButtonFarm.Parent = Frame
 
--- Função pra criar botões de toggle
-local function createToggle(text, position)
-    local toggleFrame = Instance.new("Frame")
-    toggleFrame.Size = UDim2.new(1, -20, 0, 40)
-    toggleFrame.Position = position
-    toggleFrame.BackgroundTransparency = 1
-    toggleFrame.Parent = menuFrame
+-- Botão Auto Attack
+local ToggleButtonAttack = Instance.new("TextButton")
+ToggleButtonAttack.Size = UDim2.new(0, 180, 0, 40)
+ToggleButtonAttack.Position = UDim2.new(0, 10, 0, 60)
+ToggleButtonAttack.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+ToggleButtonAttack.Text = "Auto Attack: OFF"
+ToggleButtonAttack.Parent = Frame
 
-    local label = Instance.new("TextLabel")
-    label.Size = UDim2.new(0.6, 0, 1, 0)
-    label.Position = UDim2.new(0, 10, 0, 0)
-    label.BackgroundTransparency = 1
-    label.Text = text
-    label.TextColor3 = Color3.new(1,1,1)
-    label.TextScaled = true
-    label.Font = Enum.Font.GothamBold
-    label.TextXAlignment = Enum.TextXAlignment.Left
-    label.Parent = toggleFrame
-
-    local toggleButton = Instance.new("TextButton")
-    toggleButton.Size = UDim2.new(0.3, 0, 0.6, 0)
-    toggleButton.Position = UDim2.new(0.7, 0, 0.2, 0)
-    toggleButton.BackgroundColor3 = Color3.fromRGB(150, 0, 0)
-    toggleButton.TextColor3 = Color3.new(1,1,1)
-    toggleButton.Text = "OFF"
-    toggleButton.Font = Enum.Font.GothamBold
-    toggleButton.TextScaled = true
-    toggleButton.Parent = toggleFrame
-
-    local toggled = false
-    toggleButton.MouseButton1Click:Connect(function()
-        toggled = not toggled
-        if toggled then
-            toggleButton.Text = "ON"
-            toggleButton.BackgroundColor3 = Color3.fromRGB(0, 150, 0)
-        else
-            toggleButton.Text = "OFF"
-            toggleButton.BackgroundColor3 = Color3.fromRGB(150, 0, 0)
-        end
-    end)
-
-    return toggleButton
-end
-
-local autoFarmToggle = createToggle("Auto Farm", UDim2.new(0, 10, 0, 10))
-local autoAttackToggle = createToggle("Auto Attack", UDim2.new(0, 10, 0, 60))
-
--- Toggle menu visibility ao clicar no botão Sharingan
-button.MouseButton1Click:Connect(function()
-    menuFrame.Visible = not menuFrame.Visible
+-- Funções para toggles do menu
+ToggleButtonFarm.MouseButton1Click:Connect(function()
+    autoFarm = not autoFarm
+    ToggleButtonFarm.Text = "Auto Farm: " .. (autoFarm and "ON" or "OFF")
 end)
 
--- Permitir arrastar o botão Sharingan pela tela
-local dragging
-local dragInput
-local dragStart
-local startPos
+ToggleButtonAttack.MouseButton1Click:Connect(function()
+    autoAttack = not autoAttack
+    ToggleButtonAttack.Text = "Auto Attack: " .. (autoAttack and "ON" or "OFF")
+end)
 
-local function updateInput(input)
-    local delta = input.Position - dragStart
-    local newPos = UDim2.new(
-        startPos.X.Scale,
-        startPos.X.Offset + delta.X,
-        startPos.Y.Scale,
-        startPos.Y.Offset + delta.Y
-    )
-    button.Position = newPos
-    menuFrame.Position = UDim2.new(0, newPos.X.Offset, 0, newPos.Y.Offset + 65)
-end
+-- Função Auto Farm (placeholder)
+spawn(function()
+    while true do
+        wait(1)
+        if autoFarm then
+            print("Farmando...")
+            -- Aqui vai a lógica real de farm
+        end
+    end
+end)
 
-button.InputBegan:Connect(function(input)
+-- Função Auto Attack (placeholder)
+spawn(function()
+    while true do
+        wait(0.5)
+        if autoAttack then
+            print("Atacando...")
+            -- Aqui vai a lógica real de ataque
+        end
+    end
+end)
+
+-- Botão Sharingan arrastável
+
+local SharinganButton = Instance.new("ImageButton")
+SharinganButton.Size = UDim2.new(0, 60, 0, 60)
+SharinganButton.Position = UDim2.new(0, 20, 0, 20)
+SharinganButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+SharinganButton.BorderSizePixel = 0
+SharinganButton.Parent = ScreenGui
+
+-- Vamos desenhar um "Sharingan" simples usando imagens circulares (você pode substituir a imagem abaixo por uma real)
+-- Aqui vou usar uma imagem pública do Sharingan (caso queira trocar, é só alterar a URL da Image)
+
+SharinganButton.Image = "rbxassetid://1176481231" -- ID de uma imagem Sharingan no Roblox (exemplo)
+
+-- Se preferir desenhar com círculos, pode usar Frame + UIStroke, mas imagem é mais simples.
+
+-- Função para arrastar o botão
+local dragging = false
+local dragInput, mousePos, framePos
+
+SharinganButton.InputBegan:Connect(function(input)
     if input.UserInputType == Enum.UserInputType.MouseButton1 then
         dragging = true
-        dragStart = input.Position
-        startPos = button.Position
+        mousePos = input.Position
+        framePos = SharinganButton.Position
 
         input.Changed:Connect(function()
             if input.UserInputState == Enum.UserInputState.End then
@@ -115,14 +102,25 @@ button.InputBegan:Connect(function(input)
     end
 end)
 
-button.InputChanged:Connect(function(input)
+SharinganButton.InputChanged:Connect(function(input)
     if input.UserInputType == Enum.UserInputType.MouseMovement then
         dragInput = input
     end
 end)
 
-UserInputService.InputChanged:Connect(function(input)
+game:GetService("UserInputService").InputChanged:Connect(function(input)
     if input == dragInput and dragging then
-        updateInput(input)
+        local delta = input.Position - mousePos
+        SharinganButton.Position = UDim2.new(
+            framePos.X.Scale,
+            framePos.X.Offset + delta.X,
+            framePos.Y.Scale,
+            framePos.Y.Offset + delta.Y
+        )
     end
+end)
+
+-- Abrir/fechar menu ao clicar no botão Sharingan
+SharinganButton.MouseButton1Click:Connect(function()
+    Frame.Visible = not Frame.Visible
 end)
