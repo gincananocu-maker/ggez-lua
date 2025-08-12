@@ -1,6 +1,15 @@
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
-local player = Players.LocalPlayer
+
+local success, player = pcall(function()
+    return Players.LocalPlayer
+end)
+
+if not success or not player then
+    warn("LocalPlayer não encontrado. Execute esse script no contexto do cliente (LocalScript).")
+    return
+end
+
 local playerGui = player:WaitForChild("PlayerGui")
 
 -- Variáveis controle
@@ -84,7 +93,7 @@ SharinganButton.BackgroundTransparency = 1
 SharinganButton.BorderSizePixel = 0
 SharinganButton.ZIndex = 12
 SharinganButton.Parent = ScreenGui
-SharinganButton.Image = "rbxassetid://1176481231" -- Certifique que esta imagem é pública e válida
+SharinganButton.Image = "rbxassetid://1176481231" -- Confirme se está pública e válida
 
 -- Variáveis para arrastar
 local dragging = false
