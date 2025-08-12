@@ -20,11 +20,11 @@ Frame.Parent = ScreenGui
 local SharinganButton = Instance.new("ImageButton")
 SharinganButton.Size = UDim2.new(0, 60, 0, 60)
 SharinganButton.Position = UDim2.new(0, 50, 0, 20)
-SharinganButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
-SharinganButton.BackgroundTransparency = 0
+SharinganButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+SharinganButton.BackgroundTransparency = 1
 SharinganButton.BorderSizePixel = 0
 SharinganButton.Parent = ScreenGui
-SharinganButton.Image = ""
+SharinganButton.Image = "rbxassetid://1176481231" -- sua imagem Sharingan
 
 SharinganButton.MouseButton1Click:Connect(function()
     Frame.Visible = not Frame.Visible
