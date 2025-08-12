@@ -1,4 +1,5 @@
 local Players = game:GetService("Players")
+local UserInputService = game:GetService("UserInputService")
 local player = Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
 
@@ -10,6 +11,7 @@ local autoAttack = false
 local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "SharinganGui"
 ScreenGui.Parent = playerGui
+ScreenGui.ResetOnSpawn = false
 
 -- Criar menu (Frame) com fundo semi-transparente
 local Frame = Instance.new("Frame")
@@ -18,6 +20,7 @@ Frame.Position = UDim2.new(0, 50, 0, 50)
 Frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 Frame.BackgroundTransparency = 0.7
 Frame.Visible = false
+Frame.ZIndex = 10
 Frame.Parent = ScreenGui
 
 -- Botão Auto Farm
@@ -27,6 +30,7 @@ ToggleButtonFarm.Position = UDim2.new(0, 10, 0, 10)
 ToggleButtonFarm.BackgroundColor3 = Color3.fromRGB(80, 80, 80)
 ToggleButtonFarm.TextColor3 = Color3.fromRGB(255, 255, 255)
 ToggleButtonFarm.Text = "Auto Farm: OFF"
+ToggleButtonFarm.ZIndex = 11
 ToggleButtonFarm.Parent = Frame
 
 -- Botão Auto Attack
@@ -36,17 +40,20 @@ ToggleButtonAttack.Position = UDim2.new(0, 10, 0, 60)
 ToggleButtonAttack.BackgroundColor3 = Color3.fromRGB(80, 80, 80)
 ToggleButtonAttack.TextColor3 = Color3.fromRGB(255, 255, 255)
 ToggleButtonAttack.Text = "Auto Attack: OFF"
+ToggleButtonAttack.ZIndex = 11
 ToggleButtonAttack.Parent = Frame
 
 -- Funções para toggles do menu
 ToggleButtonFarm.MouseButton1Click:Connect(function()
     autoFarm = not autoFarm
     ToggleButtonFarm.Text = "Auto Farm: " .. (autoFarm and "ON" or "OFF")
+    print("AutoFarm:", autoFarm)
 end)
 
 ToggleButtonAttack.MouseButton1Click:Connect(function()
     autoAttack = not autoAttack
     ToggleButtonAttack.Text = "Auto Attack: " .. (autoAttack and "ON" or "OFF")
+    print("AutoAttack:", autoAttack)
 end)
 
 -- Função Auto Farm (placeholder)
@@ -55,7 +62,6 @@ spawn(function()
         wait(1)
         if autoFarm then
             print("Farmando...")
-            -- Aqui vai a lógica real de farm
         end
     end
 end)
@@ -66,23 +72,21 @@ spawn(function()
         wait(0.5)
         if autoAttack then
             print("Atacando...")
-            -- Aqui vai a lógica real de ataque
         end
     end
 end)
 
 -- Botão Sharingan arrastável
-
 local SharinganButton = Instance.new("ImageButton")
 SharinganButton.Size = UDim2.new(0, 60, 0, 60)
 SharinganButton.Position = UDim2.new(0, 20, 0, 20)
 SharinganButton.BackgroundTransparency = 1
 SharinganButton.BorderSizePixel = 0
+SharinganButton.ZIndex = 12
 SharinganButton.Parent = ScreenGui
+SharinganButton.Image = "rbxassetid://1176481231" -- Certifique que esta imagem é pública e válida
 
-SharinganButton.Image = "rbxassetid://1176481231" -- ID de uma imagem Sharingan no Roblox (exemplo)
-
--- Função para arrastar o botão
+-- Variáveis para arrastar
 local dragging = false
 local dragInput, mousePos, framePos
 
@@ -106,7 +110,7 @@ SharinganButton.InputChanged:Connect(function(input)
     end
 end)
 
-game:GetService("UserInputService").InputChanged:Connect(function(input)
+UserInputService.InputChanged:Connect(function(input)
     if input == dragInput and dragging then
         local delta = input.Position - mousePos
         SharinganButton.Position = UDim2.new(
@@ -121,4 +125,7 @@ end)
 -- Abrir/fechar menu ao clicar no botão Sharingan
 SharinganButton.MouseButton1Click:Connect(function()
     Frame.Visible = not Frame.Visible
+    print("Menu visível?", Frame.Visible)
 end)
+
+print("Sharingan GUI carregada com sucesso!")
