@@ -11,11 +11,12 @@ local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "SharinganGui"
 ScreenGui.Parent = playerGui
 
--- Criar menu (Frame)
+-- Criar menu (Frame) com fundo semi-transparente
 local Frame = Instance.new("Frame")
 Frame.Size = UDim2.new(0, 200, 0, 150)
 Frame.Position = UDim2.new(0, 50, 0, 50)
 Frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+Frame.BackgroundTransparency = 0.7
 Frame.Visible = false
 Frame.Parent = ScreenGui
 
@@ -23,7 +24,8 @@ Frame.Parent = ScreenGui
 local ToggleButtonFarm = Instance.new("TextButton")
 ToggleButtonFarm.Size = UDim2.new(0, 180, 0, 40)
 ToggleButtonFarm.Position = UDim2.new(0, 10, 0, 10)
-ToggleButtonFarm.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+ToggleButtonFarm.BackgroundColor3 = Color3.fromRGB(80, 80, 80)
+ToggleButtonFarm.TextColor3 = Color3.fromRGB(255, 255, 255)
 ToggleButtonFarm.Text = "Auto Farm: OFF"
 ToggleButtonFarm.Parent = Frame
 
@@ -31,7 +33,8 @@ ToggleButtonFarm.Parent = Frame
 local ToggleButtonAttack = Instance.new("TextButton")
 ToggleButtonAttack.Size = UDim2.new(0, 180, 0, 40)
 ToggleButtonAttack.Position = UDim2.new(0, 10, 0, 60)
-ToggleButtonAttack.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+ToggleButtonAttack.BackgroundColor3 = Color3.fromRGB(80, 80, 80)
+ToggleButtonAttack.TextColor3 = Color3.fromRGB(255, 255, 255)
 ToggleButtonAttack.Text = "Auto Attack: OFF"
 ToggleButtonAttack.Parent = Frame
 
@@ -73,16 +76,11 @@ end)
 local SharinganButton = Instance.new("ImageButton")
 SharinganButton.Size = UDim2.new(0, 60, 0, 60)
 SharinganButton.Position = UDim2.new(0, 20, 0, 20)
-SharinganButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+SharinganButton.BackgroundTransparency = 1
 SharinganButton.BorderSizePixel = 0
 SharinganButton.Parent = ScreenGui
 
--- Vamos desenhar um "Sharingan" simples usando imagens circulares (você pode substituir a imagem abaixo por uma real)
--- Aqui vou usar uma imagem pública do Sharingan (caso queira trocar, é só alterar a URL da Image)
-
 SharinganButton.Image = "rbxassetid://1176481231" -- ID de uma imagem Sharingan no Roblox (exemplo)
-
--- Se preferir desenhar com círculos, pode usar Frame + UIStroke, mas imagem é mais simples.
 
 -- Função para arrastar o botão
 local dragging = false
