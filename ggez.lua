@@ -8,11 +8,11 @@ local playerGui = player:WaitForChild("PlayerGui")
 
 -- Criar ScreenGui
 local ScreenGui = Instance.new("ScreenGui", playerGui)
-ScreenGui.Name = "SharinganGui"
+ScreenGui.Name = "CheatGui"
 
 -- Criar Frame do menu
 local Frame = Instance.new("Frame")
-Frame.Size = UDim2.new(0, 220, 0, 180)
+Frame.Size = UDim2.new(0, 300, 0, 300)
 Frame.Position = UDim2.new(0, 100, 0, 100)
 Frame.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
 Frame.BackgroundTransparency = 0.8
@@ -21,7 +21,7 @@ Frame.Parent = ScreenGui
 
 -- Bordas arredondadas e borda suave
 local corner = Instance.new("UICorner")
-corner.CornerRadius = UDim.new(0, 10)
+corner.CornerRadius = UDim.new(0, 15)
 corner.Parent = Frame
 
 local border = Instance.new("UIStroke")
@@ -29,46 +29,47 @@ border.Color = Color3.fromRGB(100, 100, 100)
 border.Thickness = 2
 border.Parent = Frame
 
--- Variáveis de toggle
-local autoFarm = false
-local autoAttack = false
+-- Variables toggles
+local toggles = {
+    autoFarm = false,
+    autoAttack = false,
+    esp = false,
+    speedHack = false,
+    teleport = false,
+}
 
--- Botão Auto Farm
-local ToggleButtonFarm = Instance.new("TextButton")
-ToggleButtonFarm.Size = UDim2.new(0, 200, 0, 40)
-ToggleButtonFarm.Position = UDim2.new(0, 10, 0, 20)
-ToggleButtonFarm.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-ToggleButtonFarm.TextColor3 = Color3.fromRGB(255, 255, 255)
-ToggleButtonFarm.Font = Enum.Font.SourceSansBold
-ToggleButtonFarm.TextSize = 20
-ToggleButtonFarm.Text = "Auto Farm: OFF"
-ToggleButtonFarm.Parent = Frame
+-- Função para criar botões toggle
+local function createToggleButton(text, posY, toggleName)
+    local btn = Instance.new("TextButton")
+    btn.Size = UDim2.new(0, 280, 0, 40)
+    btn.Position = UDim2.new(0, 10, 0, posY)
+    btn.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+    btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    btn.Font = Enum.Font.SourceSansBold
+    btn.TextSize = 20
+    btn.Text = text .. ": OFF"
+    btn.Parent = Frame
 
-ToggleButtonFarm.MouseButton1Click:Connect(function()
-    autoFarm = not autoFarm
-    ToggleButtonFarm.Text = "Auto Farm: " .. (autoFarm and "ON" or "OFF")
-end)
+    btn.MouseButton1Click:Connect(function()
+        toggles[toggleName] = not toggles[toggleName]
+        btn.Text = text .. ": " .. (toggles[toggleName] and "ON" or "OFF")
+        print(text .. " toggled to " .. (toggles[toggleName] and "ON" or "OFF"))
+    end)
 
--- Botão Auto Attack
-local ToggleButtonAttack = Instance.new("TextButton")
-ToggleButtonAttack.Size = UDim2.new(0, 200, 0, 40)
-ToggleButtonAttack.Position = UDim2.new(0, 10, 0, 70)
-ToggleButtonAttack.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-ToggleButtonAttack.TextColor3 = Color3.fromRGB(255, 255, 255)
-ToggleButtonAttack.Font = Enum.Font.SourceSansBold
-ToggleButtonAttack.TextSize = 20
-ToggleButtonAttack.Text = "Auto Attack: OFF"
-ToggleButtonAttack.Parent = Frame
+    return btn
+end
 
-ToggleButtonAttack.MouseButton1Click:Connect(function()
-    autoAttack = not autoAttack
-    ToggleButtonAttack.Text = "Auto Attack: " .. (autoAttack and "ON" or "OFF")
-end)
+-- Criar botões
+createToggleButton("Auto Farm", 20, "autoFarm")
+createToggleButton("Auto Attack", 70, "autoAttack")
+createToggleButton("ESP", 120, "esp")
+createToggleButton("Speed Hack", 170, "speedHack")
+createToggleButton("Teleport", 220, "teleport")
 
 -- Botão Quit
 local QuitButton = Instance.new("TextButton")
-QuitButton.Size = UDim2.new(0, 200, 0, 40)
-QuitButton.Position = UDim2.new(0, 10, 0, 120)
+QuitButton.Size = UDim2.new(0, 280, 0, 40)
+QuitButton.Position = UDim2.new(0, 10, 0, 270)
 QuitButton.BackgroundColor3 = Color3.fromRGB(150, 30, 30)
 QuitButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 QuitButton.Font = Enum.Font.SourceSansBold
@@ -80,17 +81,16 @@ QuitButton.MouseButton1Click:Connect(function()
     ScreenGui:Destroy()
 end)
 
--- Botão Sharingan arrastável
+-- Botão arrastável Sharingan
 local SharinganButton = Instance.new("ImageButton")
 SharinganButton.Size = UDim2.new(0, 60, 0, 60)
 SharinganButton.Position = UDim2.new(0, 20, 0, 20)
-SharinganButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
 SharinganButton.BackgroundTransparency = 1
 SharinganButton.BorderSizePixel = 0
 SharinganButton.Parent = ScreenGui
-SharinganButton.Image = "rbxassetid://6023426915" -- Ícone oficial Roblox
+SharinganButton.Image = "rbxassetid://7072718101" -- ícone azul transparente
 
--- Variáveis para drag
+-- Dragging vars
 local dragging = false
 local dragInput
 local dragStart
@@ -128,18 +128,20 @@ UserInputService.InputChanged:Connect(function(input)
     end
 end)
 
--- Mostrar/ocultar menu ao clicar no botão
+-- Clique abre/fecha menu (se não estiver arrastando)
 SharinganButton.MouseButton1Click:Connect(function()
-    Frame.Visible = not Frame.Visible
+    if not dragging then
+        Frame.Visible = not Frame.Visible
+    end
 end)
 
--- Placeholders das funções Auto Farm e Auto Attack
+-- Placeholders dos loops para as funções ativas
 spawn(function()
     while true do
         wait(1)
-        if autoFarm then
-            print("Farmando...")
-            -- Lógica do Auto Farm aqui
+        if toggles.autoFarm then
+            print("Auto Farm ativo")
+            -- lógica real aqui
         end
     end
 end)
@@ -147,9 +149,39 @@ end)
 spawn(function()
     while true do
         wait(0.5)
-        if autoAttack then
-            print("Atacando...")
-            -- Lógica do Auto Attack aqui
+        if toggles.autoAttack then
+            print("Auto Attack ativo")
+            -- lógica real aqui
+        end
+    end
+end)
+
+spawn(function()
+    while true do
+        wait(1)
+        if toggles.esp then
+            print("ESP ativo")
+            -- lógica real aqui
+        end
+    end
+end)
+
+spawn(function()
+    while true do
+        wait(0.1)
+        if toggles.speedHack then
+            print("Speed Hack ativo")
+            -- lógica real aqui
+        end
+    end
+end)
+
+spawn(function()
+    while true do
+        wait(0.1)
+        if toggles.teleport then
+            print("Teleport ativo")
+            -- lógica real aqui
         end
     end
 end)
